@@ -1,130 +1,106 @@
-//fail
-
 #include <iostream>
-#include <algorithm>
+#include <cstring>
 #include <queue>
-
+#include <algorithm>
+#include <vector>
 using namespace std;
 
-int m, n, k;
-int arr[101][101] = {0, };
-int check[10000] = {0, };
-int **idx;
+bool field[100][100];
 int dx[4] = {-1, 0, 1, 0};
 int dy[4] = {0, -1, 0, 1};
+int area[100*100];
 
-bool checkAll();
-pair<int, int> returnPair();
+pair<int, int> check(int m, int n);
 
 int main(){
-	int count = 0;
+	int m, n, k, count = 0;
 	cin >> m >> n >> k;
 
-	idx = new int*[k];
-	for(int i = 0; i < k; i++)
-		idx[i] = new int[4];
+	memset(field, false, sizeof(field));
 
-	for(int i = 0; i < k; i++)
-		for(int j = 0; j < 4; j++)
-			cin >> idx[i][j];
+	// k-relavant arr 
+	int **arr = new int*[k];
+	for(int i = 0; i < k; i++){
+		arr[i] = new int[4];
+	}
 
+	// k-relavant arr input
+	for(int i = 0; i < k; i++){
+		for(int j = 0; j < 4; j++){
+			cin >> arr[i][j];
+			if(j == 2 || j == 3)
+				arr[i][j] -= 1;
+		}
+		//cout << arr[i][0] << arr[i][1] << arr[i][2] << arr[i][3] << endl;
+	}
 
 	for(int i = 0; i < k; i++){
-		int from_x = idx[i][0];
-		int from_y = idx[i][1];
-		int to_x = idx[i][2];
-		int to_y = idx[i][3];
-		cout << from_x <<from_y << to_x << to_y <<endl;
-
-		for(int j = 0; j <= m; j++){
-			for(int z = 0; z <= n; z++){
-				if(j >= from_x && j <= to_x && z >= from_x && z <= to_y){
-					arr[j][z] = 1;
-				}
+		int to_y =arr[i][0];
+		int to_x = m - 1 - arr[i][1];
+		int from_y = arr[i][2];
+		int from_x = m - 1 - arr[i][3];
+//		cout <<i<<": " <<to_x << to_y << from_x <<from_y<<endl;
+		for(int j = 0; j < m; j++){
+			for(int k = 0; k < n; k++){
+				if(from_x <= j && j <= to_x
+						&& to_y <= k && k <= from_y)
+					field[j][k] =true;
 			}
 		}
 	}
 
-	for(int i = 0; i<=m; i++){
-		for(int j = 0; j<=n; j++){
-			cout << arr[i][j] << " ";
-		}
-		cout << endl;
-	}
+	while(true){
+		int sub_count = 0;
+		pair<int,int > tmp = check(m, n);
+		if(tmp.first == -1 && tmp.second == -1)
+			break;
 
-	while(!checkAll()){
 		queue<pair<int, int> > q;
-		q.push(returnPair());
-		int value = 1;
+		q.push(tmp);
+		field[tmp.first][tmp.second] = true;
+		sub_count++;
 
 		while(!q.empty()){
-			int now_x = q.front().first;
-			int now_y = q.front().second;
+			pair<int, int> now = q.front();
 			q.pop();
 
 			for(int i = 0; i < 4; i++){
-				int nx = now_x + dx[i];
-				int ny = now_y + dy[i];
-				if(nx >= 0 && nx <=m && ny >=0 && ny <=n){
-					if(arr[nx][ny] == 0){
-						arr[nx][ny] = 1;
-						q.push(make_pair(nx, ny));
-						value++;
-					}
+				int x = now.first + dx[i];
+				int y = now.second + dy[i];
+				if(x <  0 || x >= m || y < 0 || y >= n)
+					continue;
+				if(field[x][y] == false){
+					q.push(make_pair(x, y));
+					field[x][y] = true;
+					sub_count++;
 				}
 			}
 		}
-
-		for(int i = 0; i<=m; i++){
-			for(int j = 0; j<=n; j++){
-				cout << arr[i][j] << " ";
-			}
-			cout << endl;
-		}
-
-		check[count] = value;
-		count++; //point next index
+		area[count] = sub_count;
+		count++;
 	}
 
-	sort(check, check + count - 1);
-
+	vector<int> v(area, area + count);
+	sort(v.begin(), v.end());
 	cout << count << endl;
-	for(int i = 0; i < count; i++){
-		cout << check[i] << " ";
-	}
+	for(int i = 0; i < count ; i++)
+		cout << v[i] << " ";
 	cout << endl;
 
+	// free k-relavant arr
 	for(int i = 0; i < k; i++)
-		delete[] idx[i];
-	delete[] idx;
+		delete[] arr[i];
+	delete[] arr;
 
 	return 0;
 }
 
-bool checkAll(){
-	bool result = true;
-	for(int i = 0; i <= m; i++){
-		for(int j = 0; j <= n; j++){
-			if(arr[i][j] == 0){
-				result = false;
-				break;
-			}
+pair<int, int> check(int m, int n){
+	for(int i = 0;i < m; i++){
+		for(int j = 0; j < n; j++){
+			if(field[i][j] == false)
+				return make_pair(i, j);
 		}
 	}
-	return result;
-}
-
-pair<int, int> returnPair(){
-	pair<int, int> result;
-
-	for(int i = 0; i <= m; i++){
-		for(int j = 0; j <= n; j++){
-			if(arr[i][j] == 0){
-				result.first = i;
-				result.second = j;
-				break;
-			}
-		}
-	}
-	return result;
+	return make_pair(-1, -1);
 }
