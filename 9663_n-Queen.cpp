@@ -65,7 +65,7 @@ bool check(int row, int col){
 //
 //	//왼쪽 대각선(위)
 //	for(int i = 1; i < n; i++){
-//		if(row - i >= 0 && col - i < n){
+//		if(row - i >= 0 && col - i >= n){
 //			if(a[row - i][col - i] == true){
 //				return false;
 //			}
