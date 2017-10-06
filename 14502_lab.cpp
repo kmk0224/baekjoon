@@ -1,4 +1,3 @@
-// fail
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -27,20 +26,20 @@ int main(){
 	for(int i1 = 0; i1 < n; i1++){
 		for(int j1 = 0; j1 < m; j1++){
 			if(field[i1][j1] != 0)
-				continue;
+			continue;
 			for(int i2 = 0; i2 < n; i2++){
 				for(int j2 = 0; j2 < m; j2++){
 					if(field[i2][j2] != 0)
-						continue;
+					continue;
 					for(int i3 = 0; i3 < n; i3++){
 						for(int j3 = 0; j3 < m; j3++){
 							if(field[i3][j3] != 0)
+							continue;
+							if((i1 == i2 && j1 == j2)
+							|| (i2 == i3 && j2 == j3)
+							|| (i3 == i1 && j3 == j1))
 								continue;
-							if(i1 == i2 || i2 == i3
-									|| j1 == j2 || j2== j3)
-								continue;
-							string tmp = "";
-							tmp = tmp + to_string(i1) + to_string(j1)
+							string tmp = to_string(i1) + to_string(j1)
 								+ to_string(i2) + to_string(j2)
 								+ to_string(i3) + to_string(j3);
 							input[cnt_input] = tmp;
@@ -65,7 +64,7 @@ int main(){
 		// build wall when there is no virus or wall (1, 2)
 		string tmp = input[i];
 		int num_tmp = stoi(tmp);
-		//cout << num_tmp << endl;
+//		cout << num_tmp << endl;
 
 		for(int j = 0; j < 3; j++){
 			int k = num_tmp % 100;
